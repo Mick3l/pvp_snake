@@ -1,0 +1,23 @@
+cmake_policy(SET CMP0167 NEW)
+
+find_package(Boost REQUIRED COMPONENTS system thread)
+
+add_subdirectory(tests)
+
+add_library(game_context context.h context.cpp)
+target_link_libraries(game_context PUBLIC Boost::system Boost::thread)
+target_include_directories(game_context PUBLIC ${Boost_INCLUDE_DIRS})
+
+add_library(main_processor main_processor.h main_processor.cpp)
+target_link_libraries(main_processor PUBLIC Boost::system Boost::thread game_context)
+target_include_directories(main_processor PUBLIC ${Boost_INCLUDE_DIRS})
+
+add_library(networking networking.h networking.cpp)
+target_link_libraries(networking PUBLIC Boost::system game_context)
+target_include_directories(networking PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(networking PRIVATE nlohmann_json::nlohmann_json)
+
+add_executable(bin bin.cpp)
+target_link_libraries(bin PRIVATE main_processor Boost::system Boost::thread)
+target_link_libraries(bin PRIVATE networking game_context main_processor)
+target_include_directories(bin PRIVATE ${Boost_INCLUDE_DIRS})

@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.25.0)
+
+set(CMAKE_CXX_STANDARD 17 REQUIRED)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+set(I18N_TRANSLATED_LANGUAGES ru)
+
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network LinguistTools WebSockets)
+include_directories(${Qt6_INCLUDE_DIRS})
+
+add_subdirectory(tests)
+
+add_library(game_canvas game_canvas.h game_canvas.cpp)
+target_link_libraries(game_canvas Qt6::Widgets Qt6::Gui Qt6::Core Qt6::Network Qt6::WebSockets)
+
+add_library(websocket_client websocket_client.h websocket_client.cpp)
+target_link_libraries(websocket_client Qt6::Widgets Qt6::Gui Qt6::Core Qt6::Network Qt6::WebSockets game_canvas)
+
+add_library(main_window main_window.h main_window.cpp)
+target_link_libraries(main_window websocket_client game_canvas Qt6::Widgets Qt6::Gui Qt6::Core Qt6::Network Qt6::WebSockets)
+
+set(SOURCES
+    main.cpp
+    main_window.cpp
+    game_canvas.cpp
+    websocket_client.cpp
+    resource.qrc
+)
+
+add_executable(client_main "${SOURCES}")
+
+# Генерация .qm файла
+set(TS_FILE ${CMAKE_CURRENT_SOURCE_DIR}/snake_ru.ts)
+set(QM_FILE ${CMAKE_CURRENT_SOURCE_DIR}/snake_ru.qm)
+
+add_custom_command(
+    OUTPUT ${QM_FILE}
+    COMMAND Qt6::lrelease ${TS_FILE} -qm ${QM_FILE}
+    DEPENDS ${TS_FILE}
+)
+
+qt6_add_translations(client_main TS_FILES snake_ru.ts)
+
+target_link_libraries(client_main Qt6::Widgets Qt6::Gui Qt6::Core Qt6::Network Qt6::WebSockets)
