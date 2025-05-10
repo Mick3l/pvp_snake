@@ -1,6 +1,14 @@
 ## PVP snake game
 A multiplayer Snake game, developed using C++, Boost and Qt. The game includes a server part that processes the game logic, and a UI client part.
 
+### Screenshots
+
+![](img/start_screen.jpg)
+![](img/game_screen1.jpg)
+![](img/game_screen2.jpg)
+![](img/end_game_screen.jpg)
+
+
 ### Project Features
 * Multiplayer game "Snake" in PvP mode
 * Networking using WebSocket
